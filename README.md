@@ -216,9 +216,9 @@ http://localhost:5000/api/v1
 - [x] RBAC middleware
 - [x] User `/me` endpoint
 - [x] Admin users API
-- [ ] Google OAuth *(in progress)*
+- [x] Google OAuth *(in progress)*
 - [ ] Two-factor authentication / TOTP *(in progress)*
-- [ ] Route & naming cleanup *(planned)*
+- [x] Route & naming cleanup *(planned)*
 - [ ] VPS deployment — PM2 + Nginx + HTTPS *(planned)*
 
 ---
