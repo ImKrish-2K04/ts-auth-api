@@ -22,8 +22,10 @@
     "mongoose": "^9.6.2",
     "morgan": "^1.10.1",
     "nodemailer": "^8.0.7",
+    "otplib": "^13.4.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "qrcode": "^1.5.4",
     "rotating-file-stream": "^3.2.9",
     "zod": "^4.4.3"
   },
@@ -37,6 +39,7 @@
     "@types/nodemailer": "^8.0.0",
     "@types/passport": "^1.0.17",
     "@types/passport-google-oauth20": "^2.0.17",
+    "@types/qrcode": "^1.5.6",
     "ts-node-dev": "^2.0.0",
     "typescript": "^6.0.3"
   }

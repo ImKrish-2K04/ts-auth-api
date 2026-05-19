@@ -55,6 +55,9 @@ const userSchema = new Schema(
       type: String,
       select: false,
     },
+    twoFactorSecretExpiresAt: {
+      type: Date,
+    },
     tokenVersion: {
       type: Number,
       default: 0,

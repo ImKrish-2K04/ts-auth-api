@@ -25,19 +25,19 @@ This isn't just a basic JWT login. This is a full-featured auth system you'd act
 
 ## 🛠️ Tech Stack
 
-| Layer            | Technology                     |
-| ---------------- | ------------------------------ |
-| Runtime          | Node.js v18+                   |
-| Framework        | Express.js v4                  |
-| Database         | MongoDB + Mongoose v9          |
-| Language         | TypeScript v6                  |
-| Auth Tokens      | jsonwebtoken v9                |
-| Password Hashing | bcryptjs v3                    |
-| Validation       | Zod v4                         |
-| Email            | Nodemailer SMTP                |
-| Logging          | Morgan + rotating-file-stream  |
-| 2FA              | TOTP (otplib) with QR codes    |
-| OAuth            | Google OAuth 2.0 (Passport.js) |
+| Layer | Technology |
+|---|---|
+| Runtime | Node.js v18+ |
+| Framework | Express.js v4 |
+| Database | MongoDB + Mongoose v9 |
+| Language | TypeScript v6 |
+| Auth Tokens | jsonwebtoken v9 |
+| Password Hashing | bcryptjs v3 |
+| Validation | Zod v4 |
+| Email | Nodemailer SMTP |
+| Logging | Morgan + rotating-file-stream |
+| 2FA | TOTP (otplib) with QR codes |
+| OAuth | Google OAuth 2.0 (Passport.js) |
 
 ---
 
@@ -158,52 +158,49 @@ npm start
 ## 📋 Available Routes
 
 ### Base URL
-
 ```
 http://localhost:5000/api/v1
 ```
 
 ### Authentication Routes — `/auth`
 
-| Method | Endpoint            | Description                         | Protected |
-| ------ | ------------------- | ----------------------------------- | --------- |
-| `POST` | `/sign-up`          | Register a new user                 | ❌        |
-| `GET`  | `/verify-email`     | Verify email address                | ❌        |
-| `POST` | `/sign-in`          | Login with email or username        | ❌        |
-| `POST` | `/refresh`          | Get a new access token via cookie   | ❌        |
-| `POST` | `/logout`           | Logout and invalidate refresh token | ❌        |
-| `POST` | `/forgot-password`  | Request a password reset email      | ❌        |
-| `POST` | `/reset-password`   | Reset password with token           | ❌        |
-| `GET`  | `/google`           | Initiate Google OAuth flow          | ❌        |
-| `GET`  | `/google/callback`  | Google OAuth callback handler       | ❌        |
-| `POST` | `/set-password`     | Set password for OAuth users        | ✅ User   |
-| `POST` | `/2fa/setup`        | Generate TOTP secret & QR code      | ✅ User   |
-| `POST` | `/2fa/verify-setup` | Enable 2FA with TOTP code           | ✅ User   |
-| `POST` | `/2fa/verify-login` | Verify TOTP code during login       | ❌        |
+| Method | Endpoint | Description | Protected |
+|---|---|---|---|
+| `POST` | `/sign-up` | Register a new user | ❌ |
+| `GET` | `/verify-email` | Verify email address | ❌ |
+| `POST` | `/sign-in` | Login with email or username | ❌ |
+| `POST` | `/refresh` | Get a new access token via cookie | ❌ |
+| `POST` | `/logout` | Logout and invalidate refresh token | ❌ |
+| `POST` | `/forgot-password` | Request a password reset email | ❌ |
+| `POST` | `/reset-password` | Reset password with token | ❌ |
+| `GET` | `/google` | Initiate Google OAuth flow | ❌ |
+| `GET` | `/google/callback` | Google OAuth callback handler | ❌ |
+| `POST` | `/set-password` | Set password for OAuth users | ✅ User |
+| `POST` | `/2fa/setup` | Generate TOTP secret & QR code | ✅ User |
+| `POST` | `/2fa/verify-setup` | Enable 2FA with TOTP code | ✅ User |
+| `POST` | `/2fa/verify-login` | Verify TOTP code during login | ❌ |
 
 ### User Routes — `/user`
 
-| Method | Endpoint | Description                    | Protected |
-| ------ | -------- | ------------------------------ | --------- |
-| `GET`  | `/`      | Get current authenticated user | ✅ User   |
+| Method | Endpoint | Description | Protected |
+|---|---|---|---|
+| `GET` | `/` | Get current authenticated user | ✅ User |
 
 ### Admin Routes — `/admin`
 
-| Method | Endpoint | Description                                    | Protected     |
-| ------ | -------- | ---------------------------------------------- | ------------- |
-| `GET`  | `/users` | Fetch all users (`?includeAdmin=true` for all) | ✅ Admin only |
+| Method | Endpoint | Description | Protected |
+|---|---|---|---|
+| `GET` | `/users` | Fetch all users (`?includeAdmin=true` for all) | ✅ Admin only |
 
 ---
 
 ## 🛡️ Security Architecture
 
 ### Password Security
-
 - Passwords hashed with `bcryptjs` (salt rounds: 12) — never stored in plain text
-- Password validation enforces strong requirements: 8-20 characters with uppercase, lowercase, number, and special character (!@#$%\_-)
+- Password validation enforces strong requirements: 8-20 characters with uppercase, lowercase, number, and special character (!@#$%_-)
 
 ### Token Security
-
 - **Access tokens** — short-lived (15 minutes), sent in response headers
 - **Refresh tokens** — long-lived (7 days), stored in HttpOnly cookies (immune to XSS)
 - **Refresh token rotation** — each refresh generates a new token, invalidating the old one
@@ -211,18 +208,15 @@ http://localhost:5000/api/v1
 - **Token hashing** — reset tokens and refresh tokens hashed before storage (only raw token in emails)
 
 ### Session Management
-
 - **`tokenVersion`** field on every user — instantly invalidates all tokens on password reset or suspicious activity
 - **`crypto.timingSafeEqual`** for token comparison — prevents timing-based attacks
 - **HttpOnly + Secure + SameSite** cookies — protects refresh tokens from XSS and CSRF
 
 ### Logging Security
-
 - Morgan logger configured with rotating file streams
 - Automatic redaction of `?token=` from all log files — no secrets in logs
 
 ### Email Verification
-
 - New accounts require email verification before login access
 - Verification tokens expire after a set time window
 - Unverified users blocked at login
@@ -232,7 +226,6 @@ http://localhost:5000/api/v1
 ## 🔄 Authentication Flows
 
 ### Standard Email/Password Login
-
 ```
 User Registration
   ↓
@@ -248,7 +241,6 @@ New Access Token + New Refresh Token (secure rotation)
 ```
 
 ### Two-Factor Authentication (TOTP)
-
 ```
 User enables 2FA via /2fa/setup
   ↓
@@ -266,7 +258,6 @@ Full authentication successful
 ```
 
 ### Google OAuth 2.0
-
 ```
 User clicks "Login with Google"
   ↓
@@ -290,13 +281,11 @@ OAuth users can optionally set password later via /set-password
 All authentication endpoints validate input using Zod schemas with detailed error feedback.
 
 **Sign Up & Set Password:**
-
 - Email: valid format, automatically lowercased
 - Username: 2-16 characters, alphanumeric + underscores only
-- Password: 8-20 characters, must contain uppercase, lowercase, number, and special character (!@#$%\_-)
+- Password: 8-20 characters, must contain uppercase, lowercase, number, and special character (!@#$%_-)
 
 **Sign In:**
-
 - Identifier: email or username
 - Password: validated against the same strong requirements
 
@@ -316,7 +305,7 @@ Validation errors return `400 Bad Request` with field-level error messages descr
 - [x] Google OAuth 2.0 integration
 - [x] Two-factor authentication (TOTP + backup codes)
 - [x] Set password for OAuth users
-- [ ] VPS deployment — PM2 + Nginx + HTTPS _(planned)_
+- [ ] VPS deployment — PM2 + Nginx + HTTPS *(planned)*
 
 ---
 

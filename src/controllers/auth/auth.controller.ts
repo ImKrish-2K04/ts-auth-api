@@ -17,6 +17,7 @@ import {
   resetPasswordTemplate,
   verifyEmailTemplate,
 } from "./../../lib/templates/verifyEmail";
+import { formatZodError } from "../../lib/formatZodError";
 
 const getAppUrl = () => env.BASE_URL || "http://localhost:5000/api/v1";
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -29,15 +30,8 @@ const registerHandler = async (
   next: NextFunction,
 ) => {
   const result = registerSchema.safeParse(req.body);
-  if (!result.success) {
-    const message = z.flattenError(result.error).fieldErrors
-      ? Object.entries(z.flattenError(result.error).fieldErrors)
-          .map(([field, errors]) => `${field}: ${errors.join(", ")}`)
-          .join(" | ")
-      : "Invalid data";
-
-    return next(new AppError(400, message, true));
-  }
+  if (!result.success)
+    return next(new AppError(400, formatZodError(result.error), true));
 
   const { email, userName, password } = result.data;
 
@@ -129,15 +123,8 @@ const loginHandler = async (
   next: NextFunction,
 ) => {
   const result = loginSchema.safeParse(req.body);
-  if (!result.success) {
-    const message = z.flattenError(result.error).fieldErrors
-      ? Object.entries(z.flattenError(result.error).fieldErrors)
-          .map(([field, errors]) => `${field}: ${errors.join(", ")}`)
-          .join(" | ")
-      : "Invalid data";
-
-    return next(new AppError(400, message, true));
-  }
+  if (!result.success)
+    return next(new AppError(400, formatZodError(result.error), true));
 
   const { identifier, password } = result.data;
   const isEmail = identifier.includes("@");
@@ -171,6 +158,25 @@ const loginHandler = async (
 
   if (!isValidPassword)
     return next(new AppError(400, "Invalid email/username or password!", true));
+
+  if (user.twoFactorEnabled) {
+    const tempToken = jwt.sign(
+      {
+        id: user.id,
+        purpose: "2fa",
+      },
+      env.JWT_VERIFY_SECRET,
+      {
+        expiresIn: "5m",
+      },
+    );
+
+    return res.status(200).json({
+      message: "OTP required",
+      requiresTwoFactor: true,
+      tempToken,
+    });
+  }
 
   const accessToken = createAccessToken({
     id: user.id,

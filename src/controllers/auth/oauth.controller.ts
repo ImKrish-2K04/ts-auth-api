@@ -10,6 +10,7 @@ import { env } from "../../configs/config";
 import { setPasswordSchema } from "../../schemas/auth.schema";
 import { z } from "zod";
 import { hashPassword } from "../../lib/hash";
+import { formatZodError } from "../../lib/formatZodError";
 
 const googleCallBackHandler = async (
   req: Request,
@@ -73,15 +74,8 @@ const setPasswordHandler = async (
   const { id } = req.user as { id: string };
   const result = setPasswordSchema.safeParse(req.body);
 
-  if (!result.success) {
-    const message = z.flattenError(result.error).fieldErrors
-      ? Object.entries(z.flattenError(result.error).fieldErrors)
-          .map(([field, errors]) => `${field}: ${errors.join(", ")}`)
-          .join(" | ")
-      : "Invalid data";
-
-    return next(new AppError(400, message, true));
-  }
+  if (!result.success)
+    return next(new AppError(400, formatZodError(result.error), true));
 
   const { password } = result.data;
 
