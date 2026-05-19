@@ -3,18 +3,22 @@ import { NextFunction, Request, Response } from "express";
 import { loginSchema, registerSchema } from "../../schemas/auth.schema";
 import AppError from "../../lib/appError";
 import { z } from "zod";
-import { checkPassword, hashPassword, hashToken } from "../../lib/hash";
+import { checkPassword, hashPassword } from "../../lib/hash";
 import jwt from "jsonwebtoken";
 import { env } from "../../configs/config";
 import sendEmail from "../../lib/email";
-import { createAccessToken, createRefreshToken } from "../../lib/token";
+import {
+  createAccessToken,
+  createRefreshToken,
+  hashToken,
+} from "../../lib/token";
 import crypto from "crypto";
 import {
   resetPasswordTemplate,
   verifyEmailTemplate,
 } from "./../../lib/templates/verifyEmail";
 
-const getAppUrl = () => env.APP_URL || "http://localhost:5000/api/v1";
+const getAppUrl = () => env.BASE_URL || "http://localhost:5000/api/v1";
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%_-]).{8,20}$/;
@@ -40,6 +44,7 @@ const registerHandler = async (
   const existingUser = await userModel.findOne({
     $or: [{ email }, { userName }],
   });
+
   if (existingUser)
     return next(
       new AppError(
@@ -58,13 +63,14 @@ const registerHandler = async (
   const verifyToken = jwt.sign({ id: user.id }, env.JWT_VERIFY_SECRET, {
     expiresIn: "5m",
   });
+
   const verifyUrl = `${getAppUrl()}/auth/verify-email?token=${verifyToken}`;
 
   try {
     await sendEmail(
       user.email,
       "Verify your email address",
-      verifyEmailTemplate(user.userName, verifyUrl),
+      verifyEmailTemplate(user.userName as string, verifyUrl),
     );
   } catch (error) {
     await userModel.findByIdAndDelete(user._id);
@@ -144,15 +150,27 @@ const loginHandler = async (
   if (!user)
     return next(new AppError(404, "Invalid email/username or password!", true));
 
-  const isValidPassword = await checkPassword(password, user?.passwordHash);
-
-  if (!isValidPassword)
-    return next(new AppError(400, "Invalid email/username or password!", true));
+  if (!user.passwordHash)
+    return next(
+      new AppError(
+        400,
+        "This account uses Google login. Please sign in with Google.",
+        true,
+      ),
+    );
 
   if (!user.isEmailVerified)
     return next(
       new AppError(403, "Please verify your email before logging in!", true),
     );
+
+  const isValidPassword = await checkPassword(
+    password,
+    user.passwordHash as string,
+  );
+
+  if (!isValidPassword)
+    return next(new AppError(400, "Invalid email/username or password!", true));
 
   const accessToken = createAccessToken({
     id: user.id,
@@ -196,8 +214,9 @@ const refreshHandler = async (
 ) => {
   const token = req.cookies?.refreshToken as string | undefined;
   if (!token) return next(new AppError(401, "No refresh token", true));
+
   let payload: {
-    userId: string;
+    id: string;
     tokenVersion: number;
   };
 
@@ -207,9 +226,7 @@ const refreshHandler = async (
     return next(new AppError(401, "Invalid or expired refresh token", true));
   }
 
-  const user = await userModel
-    .findById(payload.userId)
-    .select("+refreshTokenHash");
+  const user = await userModel.findById(payload.id).select("+refreshTokenHash");
   if (!user) return next(new AppError(404, "User not found", true));
 
   if (payload.tokenVersion !== user.tokenVersion)
@@ -286,7 +303,6 @@ const logoutHandler = async (
       id: string;
       tokenVersion: number;
     };
-
     await userModel.findByIdAndUpdate(payload.id, {
       $unset: { refreshTokenHash: "" },
     });
@@ -334,7 +350,7 @@ const forgotPasswordHandler = async (
     await sendEmail(
       user.email,
       "Reset your password",
-      resetPasswordTemplate(user.userName, resetUrl),
+      resetPasswordTemplate(user.userName as string, resetUrl),
     );
   } catch (error) {
     await userModel.findByIdAndUpdate(user.id, {

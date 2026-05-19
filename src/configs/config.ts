@@ -14,10 +14,9 @@ const EnvSchema = z.object({
   SMTP_USER: z.string().min(1),
   SMTP_PASS: z.string().min(1),
   MAILTRAP_API_TOKEN: z.string().min(1),
-  APP_URL: z.url(),
-  // GOOGLE_CLIENT_ID: z.string().min(1),
-  // GOOGLE_CLIENT_SECRET: z.string().min(1),
-  // GOOGLE_REDIRECT_URI: z.url(),
+  BASE_URL: z.url(),
+  GOOGLE_CLIENT_ID: z.string().min(1),
+  GOOGLE_CLIENT_SECRET: z.string().min(1),
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),

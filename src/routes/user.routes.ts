@@ -1,13 +1,19 @@
 import { Request, Response, Router } from "express";
 import requireAuth from "../middlewares/requireAuth";
+import requireRole from "../middlewares/requireRole";
 
-const router = Router();
+const userRouter = Router();
 
-router.get("/me", requireAuth, (req: Request, res: Response) => {
-  const user = req.user;
-  return res.status(200).json({
-    user,
-  });
-});
+userRouter.get(
+  "/",
+  requireAuth,
+  requireRole("user"),
+  (req: Request, res: Response) => {
+    const user = req.user;
+    return res.status(200).json({
+      user,
+    });
+  },
+);
 
-export default router;
+export default userRouter;

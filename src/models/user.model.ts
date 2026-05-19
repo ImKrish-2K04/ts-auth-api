@@ -12,7 +12,6 @@ const userSchema = new Schema(
     },
     passwordHash: {
       type: String,
-      required: true,
       minlength: 60,
       select: false,
     },
@@ -28,12 +27,21 @@ const userSchema = new Schema(
     userName: {
       type: String,
       unique: true,
-      required: true,
+      sparse: true,
       trim: true,
       match: [
         /^[a-zA-Z0-9_]{6,18}$/,
         "userName can contain only letters, numbers and underscore which should be length from 6 to 18 characters",
       ],
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      select: false,
+    },
+    avatar: {
+      type: String,
     },
     refreshTokenHash: {
       type: String,

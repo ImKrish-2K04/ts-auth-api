@@ -30,4 +30,15 @@ const loginSchema = z.object({
     ),
 });
 
-export { registerSchema, loginSchema };
+const setPasswordSchema = z.object({
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(20, "Password must be at most 20 characters")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%_-]).*$/,
+      "Password must contain uppercase, lowercase, number and special character (!@#$%_-)",
+    ),
+});
+
+export { registerSchema, loginSchema, setPasswordSchema };

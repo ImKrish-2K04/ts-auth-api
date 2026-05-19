@@ -118,7 +118,7 @@ Create a `.env` file in the root and fill in your values:
 # App
 NODE_ENV=development
 PORT=5000
-APP_URL=http://localhost:5000/api/v1
+BASE_URL=http://localhost:5000/api/v1
 
 # Database
 MONGODB_URI=your_mongodb_connection_string
@@ -139,7 +139,6 @@ MAILTRAP_API_TOKEN=your_mailtrap_api_token
 # Google OAuth
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_REDIRECT_URI=http://localhost:5000/api/v1/auth/google/callback
 ```
 
 > **Note:** For production, replace Mailtrap credentials with a real SMTP provider like Gmail, Resend, or SendGrid.
@@ -186,7 +185,7 @@ http://localhost:5000/api/v1
 
 | Method | Endpoint | Description | Protected |
 |---|---|---|---|
-| `GET` | `/me` | Get current authenticated user | ✅ User |
+| `GET` | `/` | Get current authenticated user | ✅ User |
 
 ### Admin — `/api/v1/admin`
 

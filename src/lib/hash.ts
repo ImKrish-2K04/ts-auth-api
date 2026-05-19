@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import bcrypt from "bcryptjs";
 
 const hashPassword = async (password: string): Promise<string> => {
@@ -12,8 +11,4 @@ const checkPassword = async (
   return await bcrypt.compare(password, passwordHash);
 };
 
-const hashToken = (refreshToken: string) => {
-  return crypto.createHash("sha256").update(refreshToken).digest("hex");
-};
-
-export { hashPassword, checkPassword, hashToken };
+export { hashPassword, checkPassword };

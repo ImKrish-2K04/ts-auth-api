@@ -4,9 +4,9 @@ import requireAuth from "../middlewares/requireAuth";
 import requireRole from "../middlewares/requireRole";
 import { userModel } from "../models/user.model";
 
-const router = Router();
+const adminRouter = Router();
 
-router.get(
+adminRouter.get(
   "/users",
   requireAuth,
   requireRole("admin"),
@@ -29,4 +29,4 @@ router.get(
   }),
 );
 
-export default router;
+export default adminRouter;

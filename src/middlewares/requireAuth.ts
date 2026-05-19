@@ -15,7 +15,7 @@ const requireAuth = catchAsync(
     const token = authHeader.split(" ")[1];
 
     let payload: {
-      userId: string;
+      id: string;
       role: "user" | "admin";
       tokenVersion: number;
     };
@@ -27,7 +27,7 @@ const requireAuth = catchAsync(
       return next(new AppError(401, "Invalid or expired token", true));
     }
 
-    const user = await userModel.findById(payload.userId);
+    const user = await userModel.findById(payload.id);
 
     if (!user) return next(new AppError(404, "User not found", true));
 
@@ -37,7 +37,7 @@ const requireAuth = catchAsync(
     req.user = {
       id: user.id,
       email: user.email,
-      userName: user.userName,
+      userName: user.userName as string,
       role: user.role,
       isEmailVerified: user.isEmailVerified,
       twoFactorEnabled: user.twoFactorEnabled,

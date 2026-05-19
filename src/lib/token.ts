@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import { env } from "../configs/config";
 
 interface AccessTokenTypes {
@@ -14,7 +15,7 @@ interface RefreshTokenTypes {
 
 const createAccessToken = ({ id, role, tokenVersion }: AccessTokenTypes) => {
   const payload = {
-    userId: id,
+    id: id,
     role,
     tokenVersion,
   };
@@ -26,7 +27,7 @@ const createAccessToken = ({ id, role, tokenVersion }: AccessTokenTypes) => {
 
 const createRefreshToken = ({ id, tokenVersion }: RefreshTokenTypes) => {
   const payload = {
-    userId: id,
+    id: id,
     tokenVersion,
   };
 
@@ -35,4 +36,8 @@ const createRefreshToken = ({ id, tokenVersion }: RefreshTokenTypes) => {
   });
 };
 
-export { createAccessToken, createRefreshToken };
+const hashToken = (refreshToken: string) => {
+  return crypto.createHash("sha256").update(refreshToken).digest("hex");
+};
+
+export { createAccessToken, createRefreshToken, hashToken };
