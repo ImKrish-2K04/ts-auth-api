@@ -38,7 +38,3 @@ Rotation handles the *"what if someone steals my token quietly"* problem.
 Revocation handles the *"I know something is wrong, kill it now"* problem.
 
 One is passive protection, the other is active control. You need both.
-
----
-
-Does this click? Once you say yes, the code from before will make complete sense — every line of it maps to exactly what we just talked about.
