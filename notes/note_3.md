@@ -122,9 +122,3 @@ That's it. Every existing token — access or refresh — is now dead.
 | `jwt.verify()` | Tampered or expired tokens |
 | `tokenVersion` match | Force-logout / revocation |
 | `refreshTokenHash` match | Stolen + replayed refresh tokens |
-
----
-
-You're in a really solid spot — `tokenVersion` was already the smart move. Now with `refreshTokenHash` added, you'll have production-grade auth.
-
-Want me to help wire up the logout handler next? That one's short but easy to get wrong.
