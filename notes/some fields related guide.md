@@ -1,9 +1,3 @@
-Respect for being upfront about that — that's how you actually learn.
-
-Let me explain each one in plain terms, connecting it to real auth flows you'll actually build.
-
----
-
 ## 1. `twoFactorEnabled` + `twoFactorSecret`
 
 These two always go together. They're for **2FA — Two Factor Authentication** (like when apps ask you for a 6-digit code from Google Authenticator).
@@ -104,14 +98,3 @@ Boom — every existing token now has `tokenVersion: 0` but the DB says `1`. All
 | `tokenVersion` | JWT invalidation counter | Every protected API request |
 | `resetPasswordToken` | One-time reset key | Forgot password flow |
 | `resetPasswordExpires` | Expiry for that key | Same flow, prevents old links working |
-
----
-
-For your learning journey — I'd suggest this order:
-
-1. Build basic login/register first
-2. Then add forgot password (`resetPasswordToken` + `resetPasswordExpires`)
-3. Then tackle `tokenVersion` when you learn JWTs properly
-4. 2FA is last — it's a whole separate rabbit hole
-
-Which of these do you want to go deeper on first?
